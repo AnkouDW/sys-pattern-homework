@@ -1,43 +1,67 @@
-# Домашнее задание к занятию "`ELK`" - `Яковлева Александра`
+# Домашнее задание к занятию "`Очереди RabbitMQ`" - `Яковлева Александра`
 
-# Задание 1. Elasticsearch
-Установите и запустите Elasticsearch, после чего поменяйте параметр cluster_name на случайный.
+# Задание 1. Установка RabbitMQ
+Используя Vagrant или VirtualBox, создайте виртуальную машину и установите RabbitMQ. Добавьте management plug-in и зайдите в веб-интерфейс.
 
-Приведите скриншот команды 'curl -X GET 'localhost:9200/_cluster/health?pretty', сделанной на сервере с установленным Elasticsearch. Где будет виден нестандартный cluster_name.
+Итогом выполнения домашнего задания будет приложенный скриншот веб-интерфейса RabbitMQ.
 
-![1 (1)](https://github.com/user-attachments/assets/bca25298-7042-4e35-8e98-8eb1587a7b7e)
-![2 (1)](https://github.com/user-attachments/assets/2e4a0679-68bc-48a1-adc1-49ee015c9f4a)
+<img width="1906" height="1071" alt="526479733-f7ce8d73-4eed-40b8-a736-0a7d8e7bfa16" src="https://github.com/user-attachments/assets/32d48ea5-0c8d-42dd-b911-d2002a4928a7" />
+
+# Задание 2. Отправка и получение сообщений
+Используя приложенные скрипты, проведите тестовую отправку и получение сообщения. Для отправки сообщений необходимо запустить скрипт producer.py.
+
+Для работы скриптов вам необходимо установить Python версии 3 и библиотеку Pika. Также в скриптах нужно указать IP-адрес машины, на которой запущен RabbitMQ, заменив localhost на нужный IP.
+
+$ pip install pika
+Зайдите в веб-интерфейс, найдите очередь под названием hello и сделайте скриншот. После чего запустите второй скрипт consumer.py и сделайте скриншот результата выполнения скрипта
+
+В качестве решения домашнего задания приложите оба скриншота, сделанных на этапе выполнения.
+
+Для закрепления материала можете попробовать модифицировать скрипты, чтобы поменять название очереди и отправляемое сообщение.
+
+<img width="1306" height="710" alt="526490476-87cce4ab-3272-42e6-a88d-14e037ee3ef6" src="https://github.com/user-attachments/assets/93d8a9bd-43ca-46f3-894a-a26729d4c84b" />
+<img width="1301" height="969" alt="526492067-3bbf0115-1a55-4c46-9a72-c7a179cc2888" src="https://github.com/user-attachments/assets/1a881e11-d56c-4e73-891e-ad7c25458a34" />
+
+# Задание 3. Подготовка HA кластера
+Используя Vagrant или VirtualBox, создайте вторую виртуальную машину и установите RabbitMQ. Добавьте в файл hosts название и IP-адрес каждой машины, чтобы машины могли видеть друг друга по имени.
+
+Пример содержимого hosts файла:
+
+$ cat /etc/hosts
+192.168.0.10 rmq01
+192.168.0.11 rmq02
+После этого ваши машины могут пинговаться по имени.
+
+Затем объедините две машины в кластер и создайте политику ha-all на все очереди.
+
+В качестве решения домашнего задания приложите скриншоты из веб-интерфейса с информацией о доступных нодах в кластере и включённой политикой.
+<img width="913" height="560" alt="Screenshot_3" src="https://github.com/user-attachments/assets/218fc277-2436-4450-972d-6a4bbe82c806" />
+<img width="903" height="175" alt="Screenshot_2" src="https://github.com/user-attachments/assets/33bdd929-dd83-42ce-8ad7-430feb706907" />
 
 
-# Задание 2. Kibana
-Установите и запустите Kibana.
 
-Приведите скриншот интерфейса Kibana на странице http://<ip вашего сервера>:5601/app/dev_tools#/console, где будет выполнен запрос GET /_cluster/health?pretty.
+Также приложите вывод команды с двух нод:
 
-![3](https://github.com/user-attachments/assets/47f9aa42-f05f-4e69-a0fa-76643157683f)
+$ rabbitmqctl cluster_status
+<img width="912" height="600" alt="Screenshot_1" src="https://github.com/user-attachments/assets/8d2fe4e1-3f7f-4357-87b6-5c06d472d741" />
+
+Для закрепления материала снова запустите скрипт producer.py и приложите скриншот выполнения команды на каждой из нод:
+
+$ rabbitmqadmin get queue='hello'
+<img width="910" height="133" alt="Screenshot_4" src="https://github.com/user-attachments/assets/013c5412-7bcb-4afd-8200-5ead544f9879" />
+
+После чего попробуйте отключить одну из нод, желательно ту, к которой подключались из скрипта, затем поправьте параметры подключения в скрипте consumer.py на вторую ноду и запустите его.
+<img width="913" height="462" alt="Screenshot_8" src="https://github.com/user-attachments/assets/648f7a15-ef07-4451-a63e-fe31ac94f3b2" />
+<img width="914" height="470" alt="Screenshot_9" src="https://github.com/user-attachments/assets/68c0463e-45d9-4177-9f49-cb02594d96c6" />
 
 
-# Задание 3. Logstash
-Установите и запустите Logstash и Nginx. С помощью Logstash отправьте access-лог Nginx в Elasticsearch.
-
-Приведите скриншот интерфейса Kibana, на котором видны логи Nginx.
-
-<img width="1359" height="295" alt="yes1" src="https://github.com/user-attachments/assets/f71032fb-025c-41e4-b838-07997a0b4051" />
-<img width="1923" height="1161" alt="yes2" src="https://github.com/user-attachments/assets/2be50c34-4e32-43f0-815b-bf8845aadb26" />
-
-# Задание 4. Filebeat.
-Установите и запустите Filebeat. Переключите поставку логов Nginx с Logstash на Filebeat.
-
-Приведите скриншот интерфейса Kibana, на котором видны логи Nginx, которые были отправлены через Filebeat.
-
-<img width="1370" height="765" alt="fbng" src="https://github.com/user-attachments/assets/bab9cad2-124e-4b03-8cc2-b2cf3a047800" />
-<img width="1917" height="1147" alt="fbkb" src="https://github.com/user-attachments/assets/94c1a892-8643-466c-a67d-e2ea8ea50733" />
-
+Приложите скриншот результата работы второго скрипта.
+<img width="909" height="330" alt="Screenshot_7" src="https://github.com/user-attachments/assets/c98daa22-7642-4441-94ee-aaa2fd2d281b" />
 
 Дополнительные задания (со звёздочкой*)
 Эти задания дополнительные, то есть не обязательные к выполнению, и никак не повлияют на получение вами зачёта по этому домашнему заданию. Вы можете их выполнить, если хотите глубже шире разобраться в материале.
 
-# Задание 5*. Доставка данных
-Настройте поставку лога в Elasticsearch через Logstash и Filebeat любого другого сервиса , но не Nginx. Для этого лог должен писаться на файловую систему, Logstash должен корректно его распарсить и разложить на поля.
+# * Задание 4. Ansible playbook
+Напишите плейбук, который будет производить установку RabbitMQ на любое количество нод и объединять их в кластер. При этом будет автоматически создавать политику ha-all.
 
-Приведите скриншот интерфейса Kibana, на котором будет виден этот лог и напишите лог какого приложения отправляется.
+Готовый плейбук разместите в своём репозитории.
