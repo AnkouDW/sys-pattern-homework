@@ -15,7 +15,8 @@ maste-master все тоже самое только каждый узел ст�
 Приложите скриншоты конфигурации, выполнения работы: состояния и режимы работы серверов.
 <img width="1382" height="906" alt="ex2-1" src="https://github.com/user-attachments/assets/f7a43609-695e-447f-ac11-e1a2f11a469c" />
 <img width="1382" height="832" alt="ex2-2" src="https://github.com/user-attachments/assets/992930c6-4a30-4ae2-815d-2aba29817fd3" />
-<img width="1382" height="906" alt="ex2-3" src="https://github.com/user-attachments/assets/518c840b-e940-4e1a-83e0-83e2c035d84a" />
+<img width="1382" height="906" alt="ex2-3" src="https://github.com/user-attachments/assets/0a538f7b-e5b6-4c9d-884d-083ecdb5582e" />
+
 
 
 Дополнительные задания (со звёздочкой*)
