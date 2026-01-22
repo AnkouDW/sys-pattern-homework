@@ -1,105 +1,95 @@
-# Домашнее задание к занятию "`Базы данных`" - `Яковлева Александра`
+# Домашнее задание к занятию "`Работа с данными (DDL/DML)`" - `Яковлева Александра`
 
 # Задание 1
-Опишите не менее семи таблиц, из которых состоит база данных. Определите:
+1.1. Поднимите чистый инстанс MySQL версии 8.0+. Можно использовать локальный сервер или контейнер Docker.
+Предварительно нужно установить пакет gnupg. Если не устанавливали, то:
 
-какие данные хранятся в этих таблицах,
-какой тип данных у столбцов в этих таблицах, если данные хранятся в PostgreSQL.
-Начертите схему полученной модели данных. Можете использовать онлайн-редактор: https://app.diagrams.net/
+apt-get install gnupg
 
-Этапы реализации:
+Установим MySQL APT репозиторий, переходим на страничку:
 
-Внимательно изучите предоставленный вам файл с данными и подумайте, как можно сгруппировать данные по смыслу.
-Разбейте исходный файл на несколько таблиц и определите список столбцов в каждой из них.
-Для каждого столбца подберите подходящий тип данных из PostgreSQL.
-Для каждой таблицы определите первичный ключ (PRIMARY KEY).
-Определите типы связей между таблицами.
-Начертите схему модели данных. На схеме должны быть чётко отображены:
-все таблицы с их названиями,
-все столбцы с указанием типов данных,
-первичные ключи (они должны быть явно выделены),
-линии, показывающие связи между таблицами.
-Результатом выполнения задания должен стать скриншот получившейся схемы базы данных.
+https://dev.mysql.com/downloads/
 
-Этапы реализации:
-Внимательно изучите предоставленный вам файл с данными и подумайте, как можно сгруппировать данные по смыслу.
-Разбейте исходный файл на несколько таблиц и определите список столбцов в каждой из них.
-Для каждого столбца подберите подходящий тип данных из PostgreSQL.
-Для каждой таблицы определите первичный ключ (PRIMARY KEY).
-Определите типы связей между таблицами.
-Начертите схему модели данных. На схеме должны быть чётко отображены: все таблицы с их названиями, все столбцы с указанием типов данных, первичные ключи (они должны быть явно выделены), линии, показывающие связи между таблицами.
-Результатом выполнения задания должен стать скриншот получившейся схемы базы данных.
-ОТВЕТ:
-Таблицы:
+Последний пакет называется mysql-apt-config_0.8.25-1_all.deb, копируем ссылку на него. Загрузим пакет:
 
-Employees (Сотрудники) id (PK) — уникальный идентификатор last_name — Фамилия (50) first_name — Имя (50) patronymic — Отчество (50) position_id (FK) → Positions(id) department_id (FK) → Departments(id) hire_date — дата принятия на работу salary — оклад (DECIMAL)
-Код:
+cd /tmp
 
-CREATE TABLE Employees (
-    id SERIAL PRIMARY KEY,
-    last_name VARCHAR(50) NOT NULL,
-    first_name VARCHAR(50) NOT NULL,
-    patronymic VARCHAR(05),
-    position_id INTEGER REFERENCES Positions(id),
-    department_id INTEGER REFERENCES Departments(id),
-    hire_date DATE NOT NULL,
-    salary DECIMAL(10,2) NOT NULL CHECK (salary > 0)
-);
-Positions (Должности) id (PK) title — название должности
-Код:
+wget -c https://dev.mysql.com/get/mysql-apt-config_0.8.25-1_all.deb
 
-CREATE TABLE Positions (
-    id SERIAL PRIMARY KEY,
-    title VARCHAR(150) NOT NULL UNIQUE
-);
-Departments (Подразделения) id (PK) name — название подразделения type_id (FK) → DepartmentTypes(id) branch_id (FK) → Branches(id)
-Код:
+ls -fla | grep mysql
 
-CREATE TABLE Departments (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(200) NOT NULL,
-    type_id INTEGER REFERENCES DepartmentTypes(id),
-    branch_id INTEGER REFERENCES Branches(id)
-);
-DepartmentTypes (Типы подразделений) id (PK) name — название типа
-Код:
+Установим пакет:
 
-CREATE TABLE DepartmentTypes (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE
-);
-Branches (Филиалы) id (PK) address — адрес филиала
-Код:
+dpkg -i mysql-apt-config_0.8.25-1_all.deb
 
-CREATE TABLE Branches (
-    id SERIAL PRIMARY KEY,
-    address TEXT NOT NULL
-);
-Projects (Проекты) id (PK) name — название проекта
-Код:
+После установки пакета в /etc/apt/source.list.d/ добавится mysql.list.
 
-CREATE TABLE Projects (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(200) NOT NULL UNIQUE
-);
-ProjectAssignments (Назначения на проекты) employee_id (FK) → Employees(id) project_id (FK) → Projects(id) assignment_date — дата назначения
-Код:
+Обновляем репозиторий:
 
-CREATE TABLE ProjectAssignments (
-    employee_id INTEGER REFERENCES Employees(id),
-    project_id INTEGER REFERENCES Projects(id),
-    assignment_date DATE DEFAULT CURRENT_DATE,
-    PRIMARY KEY (employee_id, project_id)
-);
+apt-get update
 
-<img width="623" height="480" alt="HW-12-1-01" src="https://github.com/user-attachments/assets/16975d9e-6588-4f04-b693-234a0cf43c7d" />
+Установим MySQL сервер.
+
+apt-get install mysql-server
+
+В процессе установки нас просят установить пароль пользователя root для MySQL. Выбираем плагин аутентификации по умолчанию. Рекомендуется Strong Password Encryption. Ok. Установка завершена.
+
+1.2. Создайте учётную запись sys_temp.
+Вход в консоль MySQL: mysql -u root -p
+
+CREATE USER 'sys_temp'@'localhost' IDENTIFIED BY 'password';
+
+####1.3. Выполните запрос на получение списка пользователей в базе данных. (скриншот)
+
+mysql> SELECT user FROM mysql.user
+
+<img width="760" height="736" alt="001" src="https://github.com/user-attachments/assets/0ccc51ff-8de4-4327-90a0-1fdc3aecf584" />
+
+1.4. Дайте все права для пользователя sys_temp.
+mysql> GRANT ALL PRIVILEGES ON . TO 'sys_temp'@'localhost';
+
+1.5. Выполните запрос на получение списка прав для пользователя sys_temp. (скриншот)
+
+mysql> SHOW GRANTS FOR 'sys_temp'@'localhost';
+
+<img width="1904" height="899" alt="002" src="https://github.com/user-attachments/assets/f08fa5a6-699e-4dd6-836f-0129051a0371" />
+
+1.6. Переподключитесь к базе данных от имени sys_temp. Для смены типа аутентификации с sha2 используйте запрос:
+
+ALTER USER 'sys_temp'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+
+1.6. По ссылке https://downloads.mysql.com/docs/sakila-db.zip скачайте дамп базы данных.
+
+1.7. Восстановите дамп в базу данных.
+
+<img width="1908" height="919" alt="003" src="https://github.com/user-attachments/assets/17202703-e43d-4ecf-a938-93ec3a24b27c" />
+
+1.8. При работе в IDE сформируйте ER-диаграмму получившейся базы данных. При работе в командной строке используйте команду для получения всех таблиц базы данных. (скриншот)
+
+<img width="1908" height="910" alt="004" src="https://github.com/user-attachments/assets/ab173e3d-e91e-430f-95cc-e7ec33eb65a1" />
+<img width="1932" height="929" alt="005" src="https://github.com/user-attachments/assets/32429128-4f0f-4cbd-a1df-2a6f87bcb5fb" />
+<img width="1920" height="912" alt="006" src="https://github.com/user-attachments/assets/964ed33f-5a33-4054-b4e9-f2e118074ad0" />
+
+Результатом работы должны быть скриншоты обозначенных заданий, а также простыня со всеми запросами.
+
+# Задание 2
+Составьте таблицу, используя любой текстовый редактор или Excel, в которой должно быть два столбца: в первом должны быть названия таблиц восстановленной базы, во втором названия первичных ключей этих таблиц. Пример: (скриншот/текст)
+
+Название таблицы | Название первичного ключа
+customer         | customer_id
+
+<img width="648" height="840" alt="007" src="https://github.com/user-attachments/assets/4f5a04c1-f064-44d8-9577-f48bdbbe8334" />
 
 
 Дополнительные задания (со звёздочкой*)
-Эти задания дополнительные, то есть не обязательные к выполнению. Вы можете их выполнить, если хотите глубже и шире разобраться в материале.
+Эти задания дополнительные, то есть не обязательные к выполнению, и никак не повлияют на получение вами зачёта по этому домашнему заданию. Вы можете их выполнить, если хотите глубже шире разобраться в материале.
 
-# Задание 2*
-Разверните СУБД Postgres на своей хостовой машине, на виртуальной машине или в контейнере docker.
+# Задание 3*
+3.1. Уберите у пользователя sys_temp права на внесение, изменение и удаление данных из базы sakila.
+
+3.2. Выполните запрос на получение списка прав для пользователя sys_temp. (скриншот)
+
+Результатом работы должны быть скриншоты обозначенных заданий, а также простыня со всеми запросами.
 Опишите схему, полученную в предыдущем задании, с помощью скрипта SQL.
 Создайте в вашей полученной СУБД новую базу данных и выполните полученный ранее скрипт для создания вашей модели данных.
 В качестве решения приложите SQL скрипт и скриншот диаграммы.
