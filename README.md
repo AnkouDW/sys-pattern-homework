@@ -1,67 +1,107 @@
-# Домашнее задание к занятию "`Очереди RabbitMQ`" - `Яковлева Александра`
+# Домашнее задание к занятию "`Базы данных`" - `Яковлева Александра`
 
-# Задание 1. Установка RabbitMQ
-Используя Vagrant или VirtualBox, создайте виртуальную машину и установите RabbitMQ. Добавьте management plug-in и зайдите в веб-интерфейс.
+# Задание 1
+Опишите не менее семи таблиц, из которых состоит база данных. Определите:
 
-Итогом выполнения домашнего задания будет приложенный скриншот веб-интерфейса RabbitMQ.
+какие данные хранятся в этих таблицах,
+какой тип данных у столбцов в этих таблицах, если данные хранятся в PostgreSQL.
+Начертите схему полученной модели данных. Можете использовать онлайн-редактор: https://app.diagrams.net/
 
-<img width="1906" height="1071" alt="526479733-f7ce8d73-4eed-40b8-a736-0a7d8e7bfa16" src="https://github.com/user-attachments/assets/32d48ea5-0c8d-42dd-b911-d2002a4928a7" />
+Этапы реализации:
 
-# Задание 2. Отправка и получение сообщений
-Используя приложенные скрипты, проведите тестовую отправку и получение сообщения. Для отправки сообщений необходимо запустить скрипт producer.py.
+Внимательно изучите предоставленный вам файл с данными и подумайте, как можно сгруппировать данные по смыслу.
+Разбейте исходный файл на несколько таблиц и определите список столбцов в каждой из них.
+Для каждого столбца подберите подходящий тип данных из PostgreSQL.
+Для каждой таблицы определите первичный ключ (PRIMARY KEY).
+Определите типы связей между таблицами.
+Начертите схему модели данных. На схеме должны быть чётко отображены:
+все таблицы с их названиями,
+все столбцы с указанием типов данных,
+первичные ключи (они должны быть явно выделены),
+линии, показывающие связи между таблицами.
+Результатом выполнения задания должен стать скриншот получившейся схемы базы данных.
 
-Для работы скриптов вам необходимо установить Python версии 3 и библиотеку Pika. Также в скриптах нужно указать IP-адрес машины, на которой запущен RabbitMQ, заменив localhost на нужный IP.
+Этапы реализации:
+Внимательно изучите предоставленный вам файл с данными и подумайте, как можно сгруппировать данные по смыслу.
+Разбейте исходный файл на несколько таблиц и определите список столбцов в каждой из них.
+Для каждого столбца подберите подходящий тип данных из PostgreSQL.
+Для каждой таблицы определите первичный ключ (PRIMARY KEY).
+Определите типы связей между таблицами.
+Начертите схему модели данных. На схеме должны быть чётко отображены: все таблицы с их названиями, все столбцы с указанием типов данных, первичные ключи (они должны быть явно выделены), линии, показывающие связи между таблицами.
+Результатом выполнения задания должен стать скриншот получившейся схемы базы данных.
+ОТВЕТ:
+Таблицы:
 
-$ pip install pika
-Зайдите в веб-интерфейс, найдите очередь под названием hello и сделайте скриншот. После чего запустите второй скрипт consumer.py и сделайте скриншот результата выполнения скрипта
+Employees (Сотрудники) id (PK) — уникальный идентификатор last_name — Фамилия (50) first_name — Имя (50) patronymic — Отчество (50) position_id (FK) → Positions(id) department_id (FK) → Departments(id) hire_date — дата принятия на работу salary — оклад (DECIMAL)
+Код:
 
-В качестве решения домашнего задания приложите оба скриншота, сделанных на этапе выполнения.
+CREATE TABLE Employees (
+    id SERIAL PRIMARY KEY,
+    last_name VARCHAR(50) NOT NULL,
+    first_name VARCHAR(50) NOT NULL,
+    patronymic VARCHAR(05),
+    position_id INTEGER REFERENCES Positions(id),
+    department_id INTEGER REFERENCES Departments(id),
+    hire_date DATE NOT NULL,
+    salary DECIMAL(10,2) NOT NULL CHECK (salary > 0)
+);
+Positions (Должности) id (PK) title — название должности
+Код:
 
-Для закрепления материала можете попробовать модифицировать скрипты, чтобы поменять название очереди и отправляемое сообщение.
+CREATE TABLE Positions (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(150) NOT NULL UNIQUE
+);
+Departments (Подразделения) id (PK) name — название подразделения type_id (FK) → DepartmentTypes(id) branch_id (FK) → Branches(id)
+Код:
 
-<img width="1306" height="710" alt="526490476-87cce4ab-3272-42e6-a88d-14e037ee3ef6" src="https://github.com/user-attachments/assets/93d8a9bd-43ca-46f3-894a-a26729d4c84b" />
-<img width="1301" height="969" alt="526492067-3bbf0115-1a55-4c46-9a72-c7a179cc2888" src="https://github.com/user-attachments/assets/1a881e11-d56c-4e73-891e-ad7c25458a34" />
+CREATE TABLE Departments (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    type_id INTEGER REFERENCES DepartmentTypes(id),
+    branch_id INTEGER REFERENCES Branches(id)
+);
+DepartmentTypes (Типы подразделений) id (PK) name — название типа
+Код:
 
-# Задание 3. Подготовка HA кластера
-Используя Vagrant или VirtualBox, создайте вторую виртуальную машину и установите RabbitMQ. Добавьте в файл hosts название и IP-адрес каждой машины, чтобы машины могли видеть друг друга по имени.
+CREATE TABLE DepartmentTypes (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE
+);
+Branches (Филиалы) id (PK) address — адрес филиала
+Код:
 
-Пример содержимого hosts файла:
+CREATE TABLE Branches (
+    id SERIAL PRIMARY KEY,
+    address TEXT NOT NULL
+);
+Projects (Проекты) id (PK) name — название проекта
+Код:
 
-$ cat /etc/hosts
-192.168.0.10 rmq01
-192.168.0.11 rmq02
-После этого ваши машины могут пинговаться по имени.
+CREATE TABLE Projects (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(200) NOT NULL UNIQUE
+);
+ProjectAssignments (Назначения на проекты) employee_id (FK) → Employees(id) project_id (FK) → Projects(id) assignment_date — дата назначения
+Код:
 
-Затем объедините две машины в кластер и создайте политику ha-all на все очереди.
+CREATE TABLE ProjectAssignments (
+    employee_id INTEGER REFERENCES Employees(id),
+    project_id INTEGER REFERENCES Projects(id),
+    assignment_date DATE DEFAULT CURRENT_DATE,
+    PRIMARY KEY (employee_id, project_id)
+);
 
-В качестве решения домашнего задания приложите скриншоты из веб-интерфейса с информацией о доступных нодах в кластере и включённой политикой.
-<img width="913" height="560" alt="Screenshot_3" src="https://github.com/user-attachments/assets/218fc277-2436-4450-972d-6a4bbe82c806" />
-<img width="903" height="175" alt="Screenshot_2" src="https://github.com/user-attachments/assets/33bdd929-dd83-42ce-8ad7-430feb706907" />
+<img width="623" height="480" alt="HW-12-1-01" src="https://github.com/user-attachments/assets/16975d9e-6588-4f04-b693-234a0cf43c7d" />
 
-
-
-Также приложите вывод команды с двух нод:
-
-$ rabbitmqctl cluster_status
-<img width="912" height="600" alt="Screenshot_1" src="https://github.com/user-attachments/assets/8d2fe4e1-3f7f-4357-87b6-5c06d472d741" />
-
-Для закрепления материала снова запустите скрипт producer.py и приложите скриншот выполнения команды на каждой из нод:
-
-$ rabbitmqadmin get queue='hello'
-<img width="910" height="133" alt="Screenshot_4" src="https://github.com/user-attachments/assets/013c5412-7bcb-4afd-8200-5ead544f9879" />
-
-После чего попробуйте отключить одну из нод, желательно ту, к которой подключались из скрипта, затем поправьте параметры подключения в скрипте consumer.py на вторую ноду и запустите его.
-<img width="913" height="462" alt="Screenshot_8" src="https://github.com/user-attachments/assets/648f7a15-ef07-4451-a63e-fe31ac94f3b2" />
-<img width="914" height="470" alt="Screenshot_9" src="https://github.com/user-attachments/assets/68c0463e-45d9-4177-9f49-cb02594d96c6" />
-
-
-Приложите скриншот результата работы второго скрипта.
-<img width="909" height="330" alt="Screenshot_7" src="https://github.com/user-attachments/assets/c98daa22-7642-4441-94ee-aaa2fd2d281b" />
 
 Дополнительные задания (со звёздочкой*)
-Эти задания дополнительные, то есть не обязательные к выполнению, и никак не повлияют на получение вами зачёта по этому домашнему заданию. Вы можете их выполнить, если хотите глубже шире разобраться в материале.
+Эти задания дополнительные, то есть не обязательные к выполнению. Вы можете их выполнить, если хотите глубже и шире разобраться в материале.
 
-# * Задание 4. Ansible playbook
-Напишите плейбук, который будет производить установку RabbitMQ на любое количество нод и объединять их в кластер. При этом будет автоматически создавать политику ha-all.
+# Задание 2*
+Разверните СУБД Postgres на своей хостовой машине, на виртуальной машине или в контейнере docker.
+Опишите схему, полученную в предыдущем задании, с помощью скрипта SQL.
+Создайте в вашей полученной СУБД новую базу данных и выполните полученный ранее скрипт для создания вашей модели данных.
+В качестве решения приложите SQL скрипт и скриншот диаграммы.
 
-Готовый плейбук разместите в своём репозитории.
+Для написания и редактирования sql удобно использовать специальный инструмент dbeaver.
