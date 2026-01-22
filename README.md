@@ -33,6 +33,7 @@ HAVING COUNT(customer.customer_id) > 300;
 <img width="953" height="452" alt="HW-12-4-2" src="https://github.com/user-attachments/assets/abb59248-0350-4bf5-8ace-cce754d413d6" />
 
 код
+
 SELECT COUNT(*) AS 'Количество фильмов'
 FROM film WHERE length > (SELECT AVG(length) FROM film);
 
@@ -41,6 +42,7 @@ FROM film WHERE length > (SELECT AVG(length) FROM film);
 <img width="951" height="451" alt="HW-12-4-3" src="https://github.com/user-attachments/assets/29e438a0-52b6-4234-982c-5c95e1d6e8ac" />
 
 код
+
 SELECT 
   DATE_FORMAT(payment_date, '%Y.%m') AS 'Дата с наибольшей суммой платежей',
   SUM(amount) AS 'Сумма платежей',
