@@ -1,97 +1,60 @@
-# Домашнее задание к занятию "`Работа с данными (DDL/DML)`" - `Яковлева Александра`
+# Домашнее задание к занятию "`SQL. Часть 2`" - `Яковлева Александра`
 
 # Задание 1
-1.1. Поднимите чистый инстанс MySQL версии 8.0+. Можно использовать локальный сервер или контейнер Docker.
-Предварительно нужно установить пакет gnupg. Если не устанавливали, то:
+Одним запросом получите информацию о магазине, в котором обслуживается более 300 покупателей, и выведите в результат следующую информацию:
 
-apt-get install gnupg
+фамилия и имя сотрудника из этого магазина;
+город нахождения магазина;
+количество пользователей, закреплённых в этом магазине.
 
-Установим MySQL APT репозиторий, переходим на страничку:
+<img width="951" height="575" alt="HW-12-4-1" src="https://github.com/user-attachments/assets/54db4ea6-dfc2-4e6c-bec2-b36c013e34dc" />
+код
 
-https://dev.mysql.com/downloads/
+SELECT 
+  staff.first_name,
+  staff.last_name,
+  city.city,
+  COUNT(customer.customer_id) AS 'Количество покупателей'
+FROM staff
+JOIN store ON staff.store_id = store.store_id
+JOIN address ON store.address_id = address.address_id
+JOIN city ON address.city_id = city.city_id
+JOIN customer ON store.store_id = customer.store_id
+GROUP BY 
+  staff.staff_id,
+  staff.first_name,
+  staff.last_name,
+  city.city
+HAVING COUNT(customer.customer_id) > 300;
 
-Последний пакет называется mysql-apt-config_0.8.25-1_all.deb, копируем ссылку на него. Загрузим пакет:
 
-cd /tmp
+#Задание 2
+Получите количество фильмов, продолжительность которых больше средней продолжительности всех фильмов.
+<img width="953" height="452" alt="HW-12-4-2" src="https://github.com/user-attachments/assets/abb59248-0350-4bf5-8ace-cce754d413d6" />
 
-wget -c https://dev.mysql.com/get/mysql-apt-config_0.8.25-1_all.deb
+код
+SELECT COUNT(*) AS 'Количество фильмов'
+FROM film WHERE length > (SELECT AVG(length) FROM film);
 
-ls -fla | grep mysql
+#Задание 3
+Получите информацию, за какой месяц была получена наибольшая сумма платежей, и добавьте информацию по количеству аренд за этот месяц.
+<img width="951" height="451" alt="HW-12-4-3" src="https://github.com/user-attachments/assets/29e438a0-52b6-4234-982c-5c95e1d6e8ac" />
 
-Установим пакет:
-
-dpkg -i mysql-apt-config_0.8.25-1_all.deb
-
-После установки пакета в /etc/apt/source.list.d/ добавится mysql.list.
-
-Обновляем репозиторий:
-
-apt-get update
-
-Установим MySQL сервер.
-
-apt-get install mysql-server
-
-В процессе установки нас просят установить пароль пользователя root для MySQL. Выбираем плагин аутентификации по умолчанию. Рекомендуется Strong Password Encryption. Ok. Установка завершена.
-
-1.2. Создайте учётную запись sys_temp.
-Вход в консоль MySQL: mysql -u root -p
-
-CREATE USER 'sys_temp'@'localhost' IDENTIFIED BY 'password';
-
-####1.3. Выполните запрос на получение списка пользователей в базе данных. (скриншот)
-
-mysql> SELECT user FROM mysql.user
-
-<img width="760" height="736" alt="001" src="https://github.com/user-attachments/assets/0ccc51ff-8de4-4327-90a0-1fdc3aecf584" />
-
-1.4. Дайте все права для пользователя sys_temp.
-mysql> GRANT ALL PRIVILEGES ON . TO 'sys_temp'@'localhost';
-
-1.5. Выполните запрос на получение списка прав для пользователя sys_temp. (скриншот)
-
-mysql> SHOW GRANTS FOR 'sys_temp'@'localhost';
-
-<img width="1904" height="899" alt="002" src="https://github.com/user-attachments/assets/f08fa5a6-699e-4dd6-836f-0129051a0371" />
-
-1.6. Переподключитесь к базе данных от имени sys_temp. Для смены типа аутентификации с sha2 используйте запрос:
-
-ALTER USER 'sys_temp'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
-
-1.6. По ссылке https://downloads.mysql.com/docs/sakila-db.zip скачайте дамп базы данных.
-
-1.7. Восстановите дамп в базу данных.
-
-<img width="1908" height="919" alt="003" src="https://github.com/user-attachments/assets/17202703-e43d-4ecf-a938-93ec3a24b27c" />
-
-1.8. При работе в IDE сформируйте ER-диаграмму получившейся базы данных. При работе в командной строке используйте команду для получения всех таблиц базы данных. (скриншот)
-
-<img width="1908" height="910" alt="004" src="https://github.com/user-attachments/assets/ab173e3d-e91e-430f-95cc-e7ec33eb65a1" />
-<img width="1932" height="929" alt="005" src="https://github.com/user-attachments/assets/32429128-4f0f-4cbd-a1df-2a6f87bcb5fb" />
-<img width="1920" height="912" alt="006" src="https://github.com/user-attachments/assets/964ed33f-5a33-4054-b4e9-f2e118074ad0" />
-
-Результатом работы должны быть скриншоты обозначенных заданий, а также простыня со всеми запросами.
-
-# Задание 2
-Составьте таблицу, используя любой текстовый редактор или Excel, в которой должно быть два столбца: в первом должны быть названия таблиц восстановленной базы, во втором названия первичных ключей этих таблиц. Пример: (скриншот/текст)
-
-Название таблицы | Название первичного ключа
-customer         | customer_id
-
-<img width="648" height="840" alt="007" src="https://github.com/user-attachments/assets/4f5a04c1-f064-44d8-9577-f48bdbbe8334" />
-
+код
+SELECT 
+  DATE_FORMAT(payment_date, '%Y.%m') AS 'Дата с наибольшей суммой платежей',
+  SUM(amount) AS 'Сумма платежей',
+  COUNT(rental_id) AS 'Количество аренд за месяц'
+FROM payment
+GROUP BY DATE_FORMAT(payment_date, '%Y.%m')
+ORDER BY SUM(amount) DESC
+LIMIT 1;
 
 Дополнительные задания (со звёздочкой*)
 Эти задания дополнительные, то есть не обязательные к выполнению, и никак не повлияют на получение вами зачёта по этому домашнему заданию. Вы можете их выполнить, если хотите глубже шире разобраться в материале.
 
-# Задание 3*
-3.1. Уберите у пользователя sys_temp права на внесение, изменение и удаление данных из базы sakila.
+#Задание 4*
+Посчитайте количество продаж, выполненных каждым продавцом. Добавьте вычисляемую колонку «Премия». Если количество продаж превышает 8000, то значение в колонке будет «Да», иначе должно быть значение «Нет».
 
-3.2. Выполните запрос на получение списка прав для пользователя sys_temp. (скриншот)
-
-Результатом работы должны быть скриншоты обозначенных заданий, а также простыня со всеми запросами.
-Опишите схему, полученную в предыдущем задании, с помощью скрипта SQL.
-Создайте в вашей полученной СУБД новую базу данных и выполните полученный ранее скрипт для создания вашей модели данных.
-В качестве решения приложите SQL скрипт и скриншот диаграммы.
-
-Для написания и редактирования sql удобно использовать специальный инструмент dbeaver.
+#Задание 5*
+Найдите фильмы, которые ни разу не брали в аренду.
