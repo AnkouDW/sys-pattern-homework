@@ -50,10 +50,12 @@ hydra -L users.txt -P pass.txt < ip-адрес > ssh
 
 с выключенной службой
 Пароль подобран. В логе файла auth видна операция подбора пароля. Suricata также показывает сканирование ssh. Лог-файл Fail2ban ничего не показал.
+
 <img width="1919" height="1079" alt="jailOFFfauthLog" src="https://github.com/user-attachments/assets/f8c7533c-4afe-4ee8-9be8-5db888ab9575" />
 <img width="1905" height="1030" alt="jailOFFsuricataLOG" src="https://github.com/user-attachments/assets/ea3ea8c7-bb64-4f00-a121-efe7063cbcba" />
 
 с включенной логи были только в file2ban
 Попытка подключения не удалась. Лог-файл Fail2ban также показывает попытку подключения. 
+
 <img width="872" height="719" alt="jailONlog" src="https://github.com/user-attachments/assets/937e21f9-cb40-4dec-8075-e58727063565" />
 
